@@ -6,3 +6,4 @@ export * from './create-external-price-account';
 export * from './init-vault';
 export * from './mint-shares-to-treasury';
 export * from './withdraw-shares-from-treasury';
+export * from './withdraw-token-from-safety-deposit-box';
