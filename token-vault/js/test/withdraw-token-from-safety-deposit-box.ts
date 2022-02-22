@@ -14,6 +14,7 @@ import {
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import {
   assertConfirmedTransaction,
+  assertError,
   assertTransactionSummary,
   PayerTransactionHandler,
   TokenBalances,
@@ -314,8 +315,164 @@ test('combined vault: with two safety deposits, repeatedly withdrawing tokens un
 });
 
 // -----------------
-// Invalid cases
+// Failure cases
 // -----------------
+test('combined vault: with one safety deposit, withdraw more tokens than it contains, fails', async (t) => {
+  const TOKEN_AMOUNT = 2;
+  const { transactionHandler, connection, safetyDeposit, initVaultAccounts } =
+    await combinedVaultWithOneDeposit(t, TOKEN_AMOUNT);
+
+  const {
+    payer,
+    vault,
+    authority: vaultAuthority,
+    vaultAuthorityPair,
+    fractionMint,
+  } = initVaultAccounts;
+
+  const [setupDestinationIxs, setupDestinationSigners, { destination }] =
+    await setupWithdrawFromSafetyDestinationAccount(connection, {
+      payer,
+      mint: safetyDeposit.tokenMint,
+    });
+  addressLabels.addLabels({ destination });
+
+  const accounts: WithdrawTokenFromSafetyDepositBoxAccounts = {
+    destination,
+    fractionMint,
+    vault,
+    vaultAuthority,
+    store: safetyDeposit.store,
+    safetyDeposit: safetyDeposit.safetyDeposit,
+  };
+  const withdrawIx = await withdrawTokenFromSafetyDepositBox(accounts, TOKEN_AMOUNT + 1);
+
+  const signers = [...setupDestinationSigners, vaultAuthorityPair];
+  const tx = new Transaction().add(...setupDestinationIxs).add(withdrawIx);
+  try {
+    await transactionHandler.sendAndConfirmTransaction(tx, signers);
+  } catch (err) {
+    assertError(t, err, [/Withdraw Token from Safety Deposit Box/i, /Store has less than amount/i]);
+  }
+
+  await assertCombinedVault(t, connection, initVaultAccounts, {
+    allowFurtherShareCreation: true,
+    tokenTypeCount: 1,
+  });
+  // Store should not have been debited
+  const storeAccount = await getAccount(connection, safetyDeposit.store);
+  spok(t, storeAccount, {
+    $topic: 'safetyDeposit: store account',
+    mint: safetyDeposit.tokenMint,
+    amount: spokSameBignum(TOKEN_AMOUNT),
+  });
+});
+
+test('combined vault: with no safety deposit passing uninitialized one, withdraw tokens, fails', async (t) => {
+  const TOKEN_AMOUNT = 2;
+  const { transactionHandler, connection, safetyDeposit, initVaultAccounts } =
+    await combinedVaultWithOneDeposit(t, TOKEN_AMOUNT, { forgetToMakeDeposit: true });
+
+  const {
+    payer,
+    vault,
+    authority: vaultAuthority,
+    vaultAuthorityPair,
+    fractionMint,
+  } = initVaultAccounts;
+
+  const [setupDestinationIxs, setupDestinationSigners, { destination }] =
+    await setupWithdrawFromSafetyDestinationAccount(connection, {
+      payer,
+      mint: safetyDeposit.tokenMint,
+    });
+  addressLabels.addLabels({ destination });
+
+  const accounts: WithdrawTokenFromSafetyDepositBoxAccounts = {
+    destination,
+    fractionMint,
+    vault,
+    vaultAuthority,
+    store: safetyDeposit.store,
+    safetyDeposit: safetyDeposit.safetyDeposit,
+  };
+  const withdrawIx = await withdrawTokenFromSafetyDepositBox(accounts, TOKEN_AMOUNT);
+
+  const signers = [...setupDestinationSigners, vaultAuthorityPair];
+  const tx = new Transaction().add(...setupDestinationIxs).add(withdrawIx);
+  try {
+    const res = await transactionHandler.sendAndConfirmTransaction(tx, signers);
+    console.log(res.txSignature);
+  } catch (err) {
+    assertError(t, err, [/Withdraw Token from Safety Deposit Box/i, /data len mismatch/i]);
+  }
+
+  await assertCombinedVault(t, connection, initVaultAccounts, {
+    allowFurtherShareCreation: true,
+    tokenTypeCount: 0,
+  });
+});
+
+test('combined vault: with no safety deposit passing one from different vault, withdraw tokens, fails', async (t) => {
+  const TOKEN_AMOUNT = 2;
+  const { safetyDeposit: otherVaultSafetyDeposit } = await combinedVaultWithOneDeposit(
+    t,
+    TOKEN_AMOUNT,
+  );
+  const { transactionHandler, connection, initVaultAccounts } = await combinedVaultWithOneDeposit(
+    t,
+    TOKEN_AMOUNT,
+    { forgetToMakeDeposit: true },
+  );
+
+  const {
+    payer,
+    vault,
+    authority: vaultAuthority,
+    vaultAuthorityPair,
+    fractionMint,
+  } = initVaultAccounts;
+
+  const [setupDestinationIxs, setupDestinationSigners, { destination }] =
+    await setupWithdrawFromSafetyDestinationAccount(connection, {
+      payer,
+      mint: otherVaultSafetyDeposit.tokenMint,
+    });
+  addressLabels.addLabels({ destination });
+
+  const accounts: WithdrawTokenFromSafetyDepositBoxAccounts = {
+    destination,
+    fractionMint,
+    vault,
+    vaultAuthority,
+    store: otherVaultSafetyDeposit.store,
+    safetyDeposit: otherVaultSafetyDeposit.safetyDeposit,
+  };
+  const withdrawIx = await withdrawTokenFromSafetyDepositBox(accounts, TOKEN_AMOUNT);
+
+  const signers = [...setupDestinationSigners, vaultAuthorityPair];
+  const tx = new Transaction().add(...setupDestinationIxs).add(withdrawIx);
+  try {
+    await transactionHandler.sendAndConfirmTransaction(tx, signers);
+  } catch (err) {
+    assertError(t, err, [
+      /Withdraw Token from Safety Deposit Box/i,
+      /safety deposit.+does not belong to this vault/i,
+    ]);
+  }
+
+  await assertCombinedVault(t, connection, initVaultAccounts, {
+    allowFurtherShareCreation: true,
+    tokenTypeCount: 0,
+  });
+  // Store of other vault should not have been debited
+  const storeAccount = await getAccount(connection, otherVaultSafetyDeposit.store);
+  spok(t, storeAccount, {
+    $topic: 'safetyDeposit: store account',
+    mint: otherVaultSafetyDeposit.tokenMint,
+    amount: spokSameBignum(TOKEN_AMOUNT),
+  });
+});
 
 // -----------------
 // Helpers
@@ -330,8 +487,11 @@ async function addSafetyDeposit(
     payer: PublicKey;
   },
   mintAmount: number,
+  opts: { forgetToMakeDeposit?: boolean } = {},
 ) {
   const { vault, payer } = accounts;
+  const { forgetToMakeDeposit = false } = opts;
+
   const safetyDepositSetup = await SafetyDepositSetup.create(connection, {
     payer,
     vault,
@@ -344,12 +504,13 @@ async function addSafetyDeposit(
     payer,
     vaultAuthority: vaultAuthorityPair.publicKey,
   });
-  const tx = new Transaction().add(...safetyDepositSetup.instructions).add(addTokenIx);
-  const signers = [
-    ...safetyDepositSetup.signers,
-    safetyDepositSetup.transferAuthorityPair,
-    vaultAuthorityPair,
-  ];
+  const tx = new Transaction().add(...safetyDepositSetup.instructions);
+  const signers = [...safetyDepositSetup.signers];
+  // Setup the safety deposit, but maybe don't actually add it the vault to create invalid scenarios
+  if (!forgetToMakeDeposit) {
+    tx.add(addTokenIx);
+    signers.push(...[safetyDepositSetup.transferAuthorityPair, vaultAuthorityPair]);
+  }
 
   const res = await transactionHandler.sendAndConfirmTransaction(tx, signers);
   assertConfirmedTransaction(t, res.txConfirmed);
@@ -422,7 +583,11 @@ async function activateAndCombineVault(
   assertConfirmedTransaction(t, res.txConfirmed);
 }
 
-async function combinedVaultWithOneDeposit(t: test.Test, tokenAmount: number) {
+async function combinedVaultWithOneDeposit(
+  t: test.Test,
+  tokenAmount: number,
+  opts: { forgetToMakeDeposit?: boolean } = {},
+) {
   const {
     transactionHandler,
     connection,
@@ -437,6 +602,7 @@ async function combinedVaultWithOneDeposit(t: test.Test, tokenAmount: number) {
     vaultAuthorityPair,
     initVaultAccounts,
     tokenAmount,
+    opts,
   );
 
   await activateAndCombineVault(
