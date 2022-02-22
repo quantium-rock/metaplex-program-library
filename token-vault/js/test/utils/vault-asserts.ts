@@ -31,6 +31,16 @@ export async function assertCombinedVault(
 ) {
   return assertVault(t, connection, initVaultAccounts, { ...args, state: VaultState.Combined });
 }
+
+export async function assertDeactivatedVault(
+  t: Test,
+  connection: Connection,
+  initVaultAccounts: InitVaultInstructionAccounts,
+  args: { allowFurtherShareCreation?: boolean; tokenTypeCount?: number } = {},
+) {
+  return assertVault(t, connection, initVaultAccounts, { ...args, state: VaultState.Deactivated });
+}
+
 async function assertVault(
   t: Test,
   connection: Connection,
