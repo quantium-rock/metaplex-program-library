@@ -1,6 +1,7 @@
 import { bignum } from '@metaplex-foundation/beet';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { createTokenAccount, getTokenRentExempt, pdaForVault } from '../common/helpers';
+import { setupDestinationTokenAccount } from '../common';
+import { pdaForVault } from '../common/helpers';
 import {
   createWithdrawSharesFromTreasuryInstruction,
   WithdrawSharesFromTreasuryInstructionAccounts,
@@ -12,21 +13,17 @@ import { InstructionsWithAccounts } from '../types';
  * Sets up a token account and required instructions that can be used as the
  * {@link WithdrawSharesFromTreasuryInstructionAccounts.destination}.
  */
-export async function setupWithdrawDestinationAccount(
+export async function setupWithdrawSharesDestinationAccount(
   connection: Connection,
   args: {
     payer: PublicKey;
     fractionMint: PublicKey;
   },
 ): Promise<InstructionsWithAccounts<{ destination: PublicKey; destinationPair: Keypair }>> {
-  const rentExempt = await getTokenRentExempt(connection);
-  const { payer, fractionMint } = args;
-  const [
-    instructions,
-    signers,
-    { tokenAccount: destination, tokenAccountPair: destinationPair },
-  ] = createTokenAccount(payer, rentExempt, fractionMint, payer);
-  return [instructions, signers, { destination, destinationPair }];
+  return setupDestinationTokenAccount(connection, {
+    payer: args.payer,
+    mint: args.fractionMint,
+  });
 }
 
 export type WithdrawSharesFromTreasuryAccounts = Omit<
@@ -54,7 +51,7 @@ export type WithdrawSharesFromTreasuryAccounts = Omit<
  *
  * - mint: vault.fractionMint
  *
- * _set this up via {@link setupWithdrawDestinationAccount}_
+ * _set this up via {@link setupWithdrawSharesDestinationAccount}_
  *
  * #### fractionMint
  *

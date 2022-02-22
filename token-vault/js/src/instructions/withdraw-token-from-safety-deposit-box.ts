@@ -1,31 +1,21 @@
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { createTokenAccount, getTokenRentExempt, pdaForVault } from '../common/helpers';
-import { InstructionsWithAccounts } from '../types';
+import { pdaForVault } from '../common/helpers';
 import {
   createWithdrawTokenFromSafetyDepositBoxInstruction,
   WithdrawTokenFromSafetyDepositBoxInstructionAccounts,
 } from '../generated';
 import { bignum } from '@metaplex-foundation/beet';
+import { setupDestinationTokenAccount } from '../common';
 
 /**
  * Sets up a token account and required instructions that can be used as the
  * {@link WithdrawSharesFromTreasuryInstructionAccounts.destination}.
  */
-// TODO(thlorenz): Copied from src/instructions/withdraw-shares-from-treasury.ts
-// point those to a common utility function instead
-export async function setupWithdrawFromSafetyDestinationAccount(
-  connection: Connection,
-  args: {
-    payer: PublicKey;
-    fractionMint: PublicKey;
-  },
-): Promise<InstructionsWithAccounts<{ destination: PublicKey; destinationPair: Keypair }>> {
-  const rentExempt = await getTokenRentExempt(connection);
-  const { payer, fractionMint } = args;
-  const [instructions, signers, { tokenAccount: destination, tokenAccountPair: destinationPair }] =
-    createTokenAccount(payer, rentExempt, fractionMint, payer);
-  return [instructions, signers, { destination, destinationPair }];
-}
+export const setupWithdrawFromSafetyDestinationAccount = setupDestinationTokenAccount;
+
+export type WithdrawTokenFromSafetyDepositBoxAccounts = Omit<
+  WithdrawTokenFromSafetyDepositBoxInstructionAccounts,
+  'transferAuthority'
+>;
 
 /**
  * // TODO(thlorenz): Update this fully
@@ -71,18 +61,18 @@ export async function setupWithdrawFromSafetyDestinationAccount(
  *
  * #### vault
  *
- * - tokenTypeCount: decremented
+ * - tokenTypeCount: decremented if safety deposit emptied out
  * - state: if tokenTypeCount == 0 and fractionMint.supply == 0 -> {@link VaultState.Deactivated}
  *
  * @param accounts needed to withdraw
- * @param amount to withdray
+ * @param amount to withdraw
  *
  * NOTE: that the {@link WithdrawTokenFromSafetyDepositBoxInstructionAccounts.transferAuthority} account is
  * derived from the {@link WithdrawTokenFromSafetyDepositBoxInstructionAccounts.vault} and does
  * not need to be provided
  */
 export async function withdrawTokenFromSafetyDepositBox(
-  accounts: Omit<WithdrawTokenFromSafetyDepositBoxInstructionAccounts, 'transferAuthority'>,
+  accounts: WithdrawTokenFromSafetyDepositBoxAccounts,
   amount: bignum,
 ) {
   const transferAuthority = await pdaForVault(accounts.vault);
