@@ -922,19 +922,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metaplex-foundation/amman@npm:^0.0.12":
-  version: 0.0.12
-  resolution: "@metaplex-foundation/amman@npm:0.0.12"
+"@metaplex-foundation/amman@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@metaplex-foundation/amman@npm:0.1.0"
   dependencies:
     "@solana/spl-token": ^0.1.8
+    "@solana/spl-token-registry": ^0.2.2405
     "@solana/web3.js": ^1.35.0
     bn.js: ^5.2.0
     debug: ^4.3.3
+    text-table: ^0.2.0
     wait-on: ^6.0.0
     yargs: ^17.3.0
   bin:
     amman: dist/cli/amman.js
-  checksum: 1e9adf4c49fb5a91d799c3ce60f41a6a19d7dd835cd598b9a97307330283a0336a7ec1e81e5d69b507f062f24f5ee0191229385aa2bfa5899f370abdce622109
+  checksum: 7d81073def86e29d7557722c1acf27db26cdbc8a5120af02c89578f7d9fec1b061c8fd23e072c5432d4d68539e14ea21fa6e27250362a6cf6cd4d955e9f6db7a
   languageName: node
   linkType: hard
 
@@ -1049,7 +1051,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@metaplex-foundation/mpl-fixed-price-sale@workspace:fixed-price-sale/js"
   dependencies:
-    "@metaplex-foundation/amman": ^0.0.12
+    "@metaplex-foundation/amman": ^0.1.0
     "@metaplex-foundation/beet": ^0.0.8
     "@metaplex-foundation/beet-solana": ^0.0.6
     "@metaplex-foundation/mpl-token-metadata": 1.1.0
@@ -1086,7 +1088,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@metaplex-foundation/mpl-metaplex@workspace:metaplex/js"
   dependencies:
-    "@metaplex-foundation/amman": ^0.0.12
+    "@metaplex-foundation/amman": ^0.1.0
     "@metaplex-foundation/mpl-auction": ^0.0.2
     "@metaplex-foundation/mpl-core": ^0.0.2
     "@metaplex-foundation/mpl-token-metadata": ^0.0.2
@@ -1141,7 +1143,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@metaplex-foundation/mpl-token-metadata@workspace:token-metadata/js"
   dependencies:
-    "@metaplex-foundation/amman": ^0.0.12
+    "@metaplex-foundation/amman": ^0.1.0
     "@metaplex-foundation/mpl-core": ^0.0.2
     "@solana/spl-token": ^0.1.8
     "@solana/web3.js": ^1.35.0
@@ -1161,7 +1163,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@metaplex-foundation/mpl-token-vault@workspace:token-vault/js"
   dependencies:
-    "@metaplex-foundation/amman": ^0.0.12
+    "@metaplex-foundation/amman": ^0.1.0
     "@metaplex-foundation/beet": ^0.0.8
     "@metaplex-foundation/beet-solana": ^0.0.6
     "@metaplex-foundation/mpl-core": ^0.0.2
@@ -1506,6 +1508,15 @@ __metadata:
   dependencies:
     buffer: ~6.0.3
   checksum: 72384aeff35ad6ae3bc1aed10be4f55205179d9eba6a3f0df9bf6bcb27613d6f661f6cb84691dd4dbc354f07bf9f7f8113ededceb1aee03b479e4a1847d86ae1
+  languageName: node
+  linkType: hard
+
+"@solana/spl-token-registry@npm:^0.2.2405":
+  version: 0.2.2456
+  resolution: "@solana/spl-token-registry@npm:0.2.2456"
+  dependencies:
+    cross-fetch: 3.0.6
+  checksum: 299a77ce147ada83aa208ad68a65557316560652fe91ea85e17baff551b68b60e08856e09dc6e72570ed46e9cceb98261da28a29f9d6a0692444d14abf04f661
   languageName: node
   linkType: hard
 
@@ -2796,6 +2807,15 @@ __metadata:
     path-type: ^4.0.0
     yaml: ^1.10.0
   checksum: 4be63e7117955fd88333d7460e4c466a90f556df6ef34efd59034d2463484e339666c41f02b523d574a797ec61f4a91918c5b89a316db2ea2f834e0d2d09465b
+  languageName: node
+  linkType: hard
+
+"cross-fetch@npm:3.0.6":
+  version: 3.0.6
+  resolution: "cross-fetch@npm:3.0.6"
+  dependencies:
+    node-fetch: 2.6.1
+  checksum: fc855278c3bae191a00003eed618a40b48dfadf25ccf707ffdb173add97921f89ef459815bc5cbd20554de713da4f0a2c1258f83e60895efdeab5a7834c6e3b6
   languageName: node
   linkType: hard
 
@@ -5773,6 +5793,13 @@ __metadata:
   dependencies:
     node-gyp: latest
   checksum: 31fb22d674648204f8dd94167eb5aac896c841b84a9210d614bf5d97c74ef059cc6326389cf0c54d2086e35312938401d4cc82e5fcd679202503eb8ac84814f8
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:2.6.1":
+  version: 2.6.1
+  resolution: "node-fetch@npm:2.6.1"
+  checksum: 91075bedd57879117e310fbcc36983ad5d699e522edb1ebcdc4ee5294c982843982652925c3532729fdc86b2d64a8a827797a745f332040d91823c8752ee4d7c
   languageName: node
   linkType: hard
 

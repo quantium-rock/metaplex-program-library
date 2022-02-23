@@ -55,7 +55,7 @@
     "utility-types": "^3.10.0"
   },
   "devDependencies": {
-    "@metaplex-foundation/amman": "^0.0.12",
+    "@metaplex-foundation/amman": "^0.1.0",
     "bn.js": "^5.2.0",
     "eslint": "^8.3.0",
     "rimraf": "^3.0.2",
