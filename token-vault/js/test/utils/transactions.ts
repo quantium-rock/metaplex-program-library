@@ -125,7 +125,7 @@ export async function initAndActivateVault(
     fractionTreasury,
   } = initVaultAccounts;
 
-  addressLabels.findAndAddLabels(initVaultAccounts);
+  addressLabels.addLabels(initVaultAccounts);
 
   const accounts: ActivateVaultAccounts = {
     vault,

@@ -44,7 +44,7 @@ test('inactive vault: add tokens once', async (t) => {
     mintAmount: TOKEN_AMOUNT,
   });
 
-  addressLabels.findAndAddLabels(safetyDepositSetup);
+  addressLabels.addLabels(safetyDepositSetup);
 
   // -----------------
   // Setup Add Token Instruction
@@ -212,7 +212,7 @@ test('active vault: trying to add tokens fails', async (t) => {
     vault,
     mintAmount: TOKEN_AMOUNT,
   });
-  addressLabels.findAndAddLabels(safetyDepositSetup);
+  addressLabels.addLabels(safetyDepositSetup);
 
   const addTokenIx = await addTokenToInactiveVault(safetyDepositSetup, { payer, vaultAuthority });
 

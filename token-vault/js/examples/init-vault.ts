@@ -52,7 +52,7 @@ export async function initVault(
   args: { payer: Keypair; vaultAuthority: Keypair; allowFurtherShareCreation?: boolean },
   addressLabels: AddressLabels,
 ) {
-  addressLabels.findAndAddLabels(args);
+  addressLabels.addLabels(args);
 
   const { payer, vaultAuthority, allowFurtherShareCreation = false } = args;
 

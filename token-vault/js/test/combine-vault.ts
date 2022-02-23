@@ -66,7 +66,7 @@ test('combine vault: activate vault with 0 shares and then combine it', async (t
   combineSetup.approveTransfers(payer);
   combineSetup.assertComplete();
 
-  addressLabels.findAndAddLabels(combineSetup);
+  addressLabels.addLabels(combineSetup);
 
   const combineIx = await combineVault(combineSetup);
 
@@ -158,7 +158,7 @@ test('combine vault: activate vault, mint shares and then combine it', async (t)
   combineSetup.approveTransfers(payer);
   combineSetup.assertComplete();
 
-  addressLabels.findAndAddLabels(combineSetup);
+  addressLabels.addLabels(combineSetup);
 
   const combineIx = await combineVault(combineSetup);
 
@@ -231,7 +231,7 @@ test('combine-vault: attempt to combine inactive vault, fails', async (t) => {
   combineSetup.approveTransfers(payer);
   combineSetup.assertComplete();
 
-  addressLabels.findAndAddLabels(combineSetup);
+  addressLabels.addLabels(combineSetup);
 
   const combineIx = await combineVault(combineSetup);
 
@@ -288,7 +288,7 @@ test('combine-vault: attempt to combine vault twice, fails', async (t) => {
   combineSetup.approveTransfers(payer);
   combineSetup.assertComplete();
 
-  addressLabels.findAndAddLabels(combineSetup);
+  addressLabels.addLabels(combineSetup);
 
   // 1. time
   {

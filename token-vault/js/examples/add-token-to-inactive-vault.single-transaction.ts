@@ -66,7 +66,7 @@ export async function addTokenToVault(
     vault,
     mintAmount: TOKEN_AMOUNT,
   });
-  addressLabels.findAndAddLabels(safetyDepositSetup);
+  addressLabels.addLabels(safetyDepositSetup);
 
   // -----------------
   // 2. We create the add token instruction providing the safety deposit setup

@@ -23,14 +23,6 @@ export function spokSamePubkey(a: PublicKey | COption<PublicKey>): Specification
   return same;
 }
 
-export const spokOffCurvePubkey: Specifications<PublicKey> = (function () {
-  const same = (key: PublicKey) => !PublicKey.isOnCurve(key.toBytes());
-
-  same.$spec = 'spokOffCurvePubkey';
-  same.$description = `off curve Pubkey`;
-  return same;
-})();
-
 export function spokSameBignum(a: BN | bignum): Specification<bignum> {
   const same = (b?: BN | bignum) => b != null && new BN(a).eq(new BN(b));
 

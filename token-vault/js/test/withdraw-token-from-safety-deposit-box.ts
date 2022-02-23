@@ -498,7 +498,7 @@ async function addSafetyDeposit(
     mintAmount,
   });
 
-  addressLabels.findAndAddLabels(safetyDepositSetup);
+  addressLabels.addLabels(safetyDepositSetup);
 
   const addTokenIx = await addTokenToInactiveVault(safetyDepositSetup, {
     payer,
@@ -566,7 +566,7 @@ async function activateAndCombineVault(
   combineSetup.approveTransfers(payer);
   combineSetup.assertComplete();
 
-  addressLabels.findAndAddLabels(combineSetup);
+  addressLabels.addLabels(combineSetup);
 
   const combineIx = await combineVault(combineSetup);
 

@@ -138,7 +138,7 @@ test.skip('add shares: active vault which allows further share creation, add 5',
     console.log({ initVault: res.txSignature });
   }
 
-  addressLabels.findAndAddLabels(vaultSetup);
+  addressLabels.addLabels(vaultSetup);
 
   // -----------------
   // Prepare Add Shares Instruction
